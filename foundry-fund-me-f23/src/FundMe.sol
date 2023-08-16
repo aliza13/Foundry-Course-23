@@ -3,7 +3,6 @@
 pragma solidity ^0.8.18;
 
 import {PriceConverter} from "./PriceConverter.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 
 error FundMe__NotOwner();
@@ -22,12 +21,15 @@ contract FundMe {
         s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
-    // function fund() public payable {
-    //     require(msg.value.getConversionRate() >= MINIMUM_USD, "didn't send enuff");
-    //     funders.push(msg.sender); 
-    //     addressToAmountFunded[msg.sender] += msg.value;
+    function fund() public payable {
+        require(
+            msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD,
+            "didn't send enuff"
+        );
+        funders.push(msg.sender); 
+        addressToAmountFunded[msg.sender] += msg.value;
 
-    // }
+    }
     
     function withdraw() public onlyOwner {
 
@@ -52,18 +54,12 @@ contract FundMe {
         _; 
     }
 
-    // receive() external payable {
-    //     fund();
-    // }
+    receive() external payable {
+        fund();
+    }
 
-    // fallback() external payable {
-    //     fund();
-    // }
-
-    function getPrice() public view returns(uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-        (,int256 price,,,) = priceFeed.latestRoundData(); 
-        return uint256(price) * 1e10;
+    fallback() external payable {
+        fund();
     }
 
     function getVersion() public view returns (uint256) {

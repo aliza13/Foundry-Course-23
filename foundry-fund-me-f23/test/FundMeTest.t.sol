@@ -9,7 +9,7 @@ contract FundMeTest is Test {
     FundMe fundMe;
 
     function setUp() external { // setup always runs first
-        fundMe = new FundMe(); 
+        fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306); 
     }
 
     function testMin$Is5() public {
